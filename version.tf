@@ -10,3 +10,8 @@ terraform {
 provider "hcloud" {
   token = var.hcloud_token
 }
+
+provider "vault" {
+  address = local.vault_url
+  token   = var.vault_token
+}

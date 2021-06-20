@@ -1,5 +1,5 @@
-resource "hcloud_firewall" "base" {
-  name = "base"
+resource "hcloud_firewall" "base2" {
+  name = "base2"
   rule {
     direction  = "in"
     protocol   = "icmp"
@@ -13,8 +13,8 @@ resource "hcloud_firewall" "base" {
   }
 }
 
-resource "hcloud_firewall" "k3s-server" {
-  name = "k3s-server"
+resource "hcloud_firewall" "k8s-server2" {
+  name = "k8s-server2"
   rule {
     direction  = "in"
     protocol   = "tcp"
