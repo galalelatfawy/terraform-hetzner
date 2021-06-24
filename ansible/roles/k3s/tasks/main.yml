@@ -1,0 +1,39 @@
+- name: get_url | download k3s
+  get_url:
+    url: "https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/k3s"
+    dest: /opt/k3s
+    owner: root
+    group: root
+    mode: 0750
+    checksum: "sha256:https://github.com/rancher/k3s/releases/download/{{ k3s_version }}/sha256sum-amd64.txt"
+  notify:
+    - restart k3s
+
+- name: wait_for | wait for node-token to exist on server
+  delegate_to: "{{ groups['servers'][0] }}"
+  wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+    timeout: 900
+  when: "'agents' in group_names"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: slurp | get token for k3s agent
+  delegate_to: "{{ groups['servers'][0] }}"
+  slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: k3s_token
+  when: "'agents' in group_names"
+  ignore_errors: "{{ ansible_check_mode }}"
+  diff: false
+
+- name: template | configure systemd unit for k3s
+  template:
+    src: k3s.service.j2
+    dest: /etc/systemd/system/k3s.service
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - restart k3s
+  ignore_errors: "{{ ansible_check_mode }}"
+  diff: "{{ 'server' in group_names }}"

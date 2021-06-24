@@ -1,0 +1,4 @@
+plugin: hcloud
+groups:
+  servers: "'true' in labels['servertype/server']"
+  agents: "'true' in labels['servertype/node']"
